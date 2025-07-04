@@ -14,7 +14,7 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        return Customer::all();
+        return response()->json(Customer::with('invoices')->get(), 200);
     }
 
     /**
