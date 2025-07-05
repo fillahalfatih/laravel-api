@@ -16,7 +16,50 @@ class InvoiceController extends Controller
      */
     public function index()
     {
-        return new InvoiceCollection(Invoice::paginate());
+        $query = Invoice::query();
+
+        // Filter by id
+        if (request()->has('id')) {
+            $query->where('id', request('id'));
+        }
+
+        // Filter by customer_id
+        if (request()->has('customer_id')) {
+            $query->where('customer_id', request('customer_id'));
+        }
+
+        // Filter by status
+        if (request()->has('status')) {
+            $query->where('status', request('status'));
+        }
+
+        // Filter by amount with operators
+        if (request()->has('amount')) {
+            $query->where('amount', request('amount'));
+        }
+        if (request()->has('amount_gt')) {
+            $query->where('amount', '>', request('amount_gt'));
+        }
+        if (request()->has('amount_gte')) {
+            $query->where('amount', '>=', request('amount_gte'));
+        }
+        if (request()->has('amount_lt')) {
+            $query->where('amount', '<', request('amount_lt'));
+        }
+        if (request()->has('amount_lte')) {
+            $query->where('amount', '<=', request('amount_lte'));
+        }
+
+        $invoices = $query->paginate();
+
+        if ($invoices->isEmpty()) {
+            return response()->json([
+                'message' => 'Data not found',
+                'data' => []
+            ], 404);
+        }
+
+        return new InvoiceCollection($invoices);
     }
 
     /**
