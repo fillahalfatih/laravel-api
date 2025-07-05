@@ -16,7 +16,7 @@ class InvoiceController extends Controller
      */
     public function index()
     {
-        $query = Invoice::query();
+        $query = Invoice::query()->with('customer');
 
         // Filter by id
         if (request()->has('id')) {
@@ -59,7 +59,7 @@ class InvoiceController extends Controller
             ], 404);
         }
 
-        return new InvoiceCollection($invoices);
+        return new InvoiceCollection($invoices->appends(request()->query()));
     }
 
     /**
@@ -83,7 +83,7 @@ class InvoiceController extends Controller
      */
     public function show(Invoice $invoice)
     {
-        return new InvoiceResource($invoice);
+        return new InvoiceResource($invoice->load('customer'));
     }
 
     /**

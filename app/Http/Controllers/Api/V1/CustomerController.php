@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Models\Customer;
-use App\Http\Requests\StoreCustomerRequest;
+use App\Http\Requests\V1\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\V1\CustomerResource;
@@ -16,7 +16,7 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        $query = Customer::query();
+        $query = Customer::query()->with('invoices');
 
         // Filter by id
         if (request()->has('id')) {
@@ -52,7 +52,7 @@ class CustomerController extends Controller
             ], 404);
         }
 
-        return new CustomerCollection($customers);
+        return new CustomerCollection($customers->appends(request()->query()));
     }
 
     /**
@@ -68,7 +68,14 @@ class CustomerController extends Controller
      */
     public function store(StoreCustomerRequest $request)
     {
-        //
+        // return new CustomerResource(Customer::create($request->all()));
+        
+        $customer = Customer::create($request->all());
+
+        return response()->json([
+            'message' => 'Customer created successfully',
+            'data' => new CustomerResource($customer),
+        ], 201);
     }
 
     /**
@@ -77,7 +84,7 @@ class CustomerController extends Controller
     public function show(Customer $customer)
     {
         // return response()->json($customer->load('invoices'), 200);
-        return new CustomerResource($customer);
+        return new CustomerResource($customer->load('invoices'));
     }
 
     /**
