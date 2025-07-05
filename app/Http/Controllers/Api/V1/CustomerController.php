@@ -6,6 +6,8 @@ use App\Models\Customer;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\V1\CustomerResource;
+use App\Http\Resources\V1\CustomerCollection;
 
 class CustomerController extends Controller
 {
@@ -14,7 +16,8 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        return response()->json(Customer::with('invoices')->get(), 200);
+        // return response()->json(Customer::with('invoices')->get(), 200);
+        return new CustomerCollection(Customer::all());
     }
 
     /**
@@ -38,7 +41,8 @@ class CustomerController extends Controller
      */
     public function show(Customer $customer)
     {
-        //
+        // return response()->json($customer->load('invoices'), 200);
+        return new CustomerResource($customer);
     }
 
     /**
