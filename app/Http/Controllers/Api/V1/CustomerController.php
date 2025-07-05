@@ -43,7 +43,16 @@ class CustomerController extends Controller
             $query->where('address', 'like', '%' . request('address') . '%');
         }
 
-        return new CustomerCollection($query->paginate());
+        $customers = $query->paginate();
+
+        if ($customers->isEmpty()) {
+            return response()->json([
+                'message' => 'Data not found',
+                'data' => []
+            ], 404);
+        }
+
+        return new CustomerCollection($customers);
     }
 
     /**
