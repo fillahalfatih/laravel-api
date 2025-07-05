@@ -16,8 +16,34 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        // return response()->json(Customer::with('invoices')->get(), 200);
-        return new CustomerCollection(Customer::all());
+        $query = Customer::query();
+
+        // Filter by id
+        if (request()->has('id')) {
+            $query->where('id', request('id'));
+        }
+
+        // Filter by name
+        if (request()->has('name')) {
+            $query->where('name', 'like', '%' . request('name') . '%');
+        }
+
+        // Filter by type
+        if (request()->has('type')) {
+            $query->where('type', request('type'));
+        }
+
+        // Filter by email
+        if (request()->has('email')) {
+            $query->where('email', 'like', '%' . request('email') . '%');
+        }
+
+        // Filter by address
+        if (request()->has('address')) {
+            $query->where('address', 'like', '%' . request('address') . '%');
+        }
+
+        return new CustomerCollection($query->paginate());
     }
 
     /**
